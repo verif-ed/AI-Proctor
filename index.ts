@@ -5,12 +5,13 @@ import { Server } from "socket.io";
 import type { ProctoringAlert, UserSession } from "./src/types";
 import { analyzeSession } from "./src/analysis";
 import cors from "cors";
+import { log } from "console";
 const userSessions = new Map<string, UserSession>();
 const app = express();
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: "*", // replace with your frontend URL
+    origin: "*",
     credentials: true,
   },
 });
@@ -38,10 +39,12 @@ io.on("connection", (socket) => {
 
   socket.on("proctoring_alert", (alert: ProctoringAlert) => {
     const session = userSessions.get(userId);
+    console.log("from protoring alert", session, "alert", alert);
+
     if (session) {
       session.alerts.push(alert);
       if (alert.type === "no_face") {
-        session.facePresentPercentage -= 1; // Decrease by 1% each time no face is detected
+        session.facePresentPercentage -= 0.1; // Decrease by 1% each time no face is detected
         session.facePresentPercentage = Math.max(
           session.facePresentPercentage,
           0
@@ -52,12 +55,22 @@ io.on("connection", (socket) => {
       }
     }
   });
-
+  socket.on("proctoring_challenge", () => {
+    console.log("Challenge from user");
+    socket.emit("proctoring_challenge", "Please look at the camera");
+  });
+  socket.on("test_started", () => {
+    console.log("Test started");
+  });
   socket.on("test_completed", () => {
     const session = userSessions.get(userId);
+    console.log("Session", session);
+
     if (session) {
       session.endTime = Date.now();
       const analysis = analyzeSession(session);
+      // console.log("Analysis", analysis);
+
       socket.emit("test_analysis", analysis);
     }
   });
