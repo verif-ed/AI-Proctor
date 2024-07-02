@@ -39,7 +39,7 @@ io.on("connection", (socket) => {
 
   socket.on("proctoring_alert", (alert: ProctoringAlert) => {
     const session = userSessions.get(userId);
-    console.log("from protoring alert", session, "alert", alert);
+    // console.log("from protoring alert", session, "alert", alert);
 
     if (session) {
       session.alerts.push(alert);
@@ -64,7 +64,7 @@ io.on("connection", (socket) => {
   });
   socket.on("test_completed", () => {
     const session = userSessions.get(userId);
-    console.log("Session", session);
+    // console.log("Session", session);
 
     if (session) {
       session.endTime = Date.now();
