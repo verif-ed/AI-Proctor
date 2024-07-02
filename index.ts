@@ -5,7 +5,7 @@ import { Server } from "socket.io";
 import type { ProctoringAlert, UserSession } from "./src/types";
 import { analyzeSession } from "./src/analysis";
 import cors from "cors";
-import { log } from "console";
+
 const userSessions = new Map<string, UserSession>();
 const app = express();
 const server = http.createServer(app);
