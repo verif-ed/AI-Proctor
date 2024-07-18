@@ -8,9 +8,21 @@ export interface TestAnalysis {
   lookingAwayCount: number;
   possiblePhotoDetections: number;
   overallRisk: "Low" | "Medium" | "High";
+  score: number;
 }
-
-export function analyzeSession(session: UserSession): TestAnalysis {
+// interface TestResult {
+//   totalDuration: number;
+//   facePresentPercentage: number;
+//   suspiciousActivityCount: number;
+//   lookingAwayCount: number;
+//   possiblePhotoDetections: number;
+//   overallRisk: string;
+//   score: number;
+// }
+export function analyzeSession(
+  session: UserSession,
+  score: number
+): TestAnalysis {
   const totalDuration = session.endTime - session.startTime;
   const lookingAwayCount = session.alerts.filter(
     (a) => a.type === "looking_away"
@@ -39,5 +51,6 @@ export function analyzeSession(session: UserSession): TestAnalysis {
     lookingAwayCount,
     possiblePhotoDetections,
     overallRisk,
+    score: score,
   };
 }

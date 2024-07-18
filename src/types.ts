@@ -11,4 +11,5 @@ export interface UserSession {
   alerts: ProctoringAlert[];
   facePresentPercentage: number;
   suspiciousActivityCount: number;
+  marks: number;
 }

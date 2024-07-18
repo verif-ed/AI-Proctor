@@ -5,6 +5,7 @@ import { Server } from "socket.io";
 import type { ProctoringAlert, UserSession } from "./src/types";
 import { analyzeSession } from "./src/analysis";
 import cors from "cors";
+import { log } from "console";
 
 const userSessions = new Map<string, UserSession>();
 const app = express();
@@ -20,7 +21,7 @@ app.use(
     origin: "*",
   })
 );
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3001;
 
 app.use(bodyParser.json());
 
@@ -35,6 +36,7 @@ io.on("connection", (socket) => {
     alerts: [],
     facePresentPercentage: 100,
     suspiciousActivityCount: 0,
+    marks: 0,
   });
 
   socket.on("proctoring_alert", (alert: ProctoringAlert) => {
@@ -62,15 +64,15 @@ io.on("connection", (socket) => {
   socket.on("test_started", () => {
     console.log("Test started");
   });
-  socket.on("test_completed", () => {
+  socket.on("test_completed", (data) => {
     const session = userSessions.get(userId);
     // console.log("Session", session);
+    console.log("Test completed", data.score);
 
     if (session) {
       session.endTime = Date.now();
-      const analysis = analyzeSession(session);
+      const analysis = analyzeSession(session, data.score);
       // console.log("Analysis", analysis);
-
       socket.emit("test_analysis", analysis);
     }
   });
